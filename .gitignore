@@ -9,5 +9,5 @@ docs/
 iSEEindex.Rproj
 renv/
 renv.lock
-data/
-!data/*.yaml
+data/**/*.rds
+data/configs/

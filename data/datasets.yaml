@@ -1,0 +1,52 @@
+datasets:
+  # --- Example datasets (hosted on Zenodo, for testing) ---
+  - id: ReprocessedAllenData
+    title: ReprocessedAllenData
+    uri: https://zenodo.org/record/8076991/files/ReprocessedAllenData.rds
+    description: |
+      Reprocessed Allen Data.
+  - id: BuettnerESCData
+    title: BuettnerESCData
+    uri: https://zenodo.org/record/8076991/files/BuettnerESCData.rds
+    description: |
+      Reprocessed Allen Data (copy).
+
+  # --- DII datasets (local) ---
+  # - id: dataset1
+  #   title: Dataset 1
+  #   uri: localhost:///app/data/dataset1.rds
+  #   description: |
+  #     Brief description of dataset 1.
+
+initial:
+  # --- Example configurations (for testing) ---
+  - id: config01rcall
+    datasets:
+      - ReprocessedAllenData
+    title: Example configuration 1
+    uri: rcall://system.file(package='iSEEindex','ReprocessedAllenData_config_01.R')
+    description: |
+      One ReducedDimensionPlot panel, one ColumnDataTable panel.
+  - id: config02rcall
+    datasets:
+      - ReprocessedAllenData
+    title: Example configuration 2
+    uri: rcall://system.file(package='iSEEindex','ReprocessedAllenData_config_02.R')
+    description: |
+      One RowDataTable panel, one ColumnDataTable panel.
+  - id: BuettnerESCData_config01
+    datasets:
+      - BuettnerESCData
+    title: Color by gene expression
+    uri: https://zenodo.org/record/8076991/files/BuettnerESCData_config_01.R
+    description: |
+      One RowDataTable panel, one ColumnDataTable panel.
+
+  # --- DII configurations (local) ---
+  # - id: dataset1_default
+  #   datasets:
+  #     - dataset1
+  #   title: Default view
+  #   uri: localhost:///app/data/configs/dataset1_default.R
+  #   description: |
+  #     Default panel layout for dataset 1.
