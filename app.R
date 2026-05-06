@@ -1,7 +1,13 @@
+options(shiny.autoload.r = FALSE)
+
 library("iSEE")
 library("iSEEindex")
 library("BiocFileCache")
 library("DT")
+library("stringr")
+library("rintrojs")
+library("shinyjs")
+library("urltools")
 library("yaml")
 library("shiny")
 library("shinydashboard")
@@ -9,12 +15,12 @@ library("shinydashboard")
 bfc <- BiocFileCache(cache = tempdir())
 
 dataset_fun <- function() {
-  x <- yaml::read_yaml(system.file(package = "iSEEindex", "example.yaml"))
+  x <- yaml::read_yaml("data/datasets.yaml")
   x$datasets
 }
 
 initial_fun <- function() {
-  x <- yaml::read_yaml(system.file(package = "iSEEindex", "example.yaml"))
+  x <- yaml::read_yaml("data/datasets.yaml")
   x$initial
 }
 
