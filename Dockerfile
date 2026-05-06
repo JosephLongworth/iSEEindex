@@ -17,6 +17,7 @@ COPY packages.R /app/packages.R
 RUN Rscript /app/packages.R
 
 COPY app.R /app/app.R
+COPY www/ /app/www/
 
 EXPOSE 3838
 
