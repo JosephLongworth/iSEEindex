@@ -29,20 +29,27 @@ initial_fun <- function() {
 }
 
 header <- tagList(
-  tags$head(tags$link(rel = "stylesheet", href = "custom.css")),
-  fluidRow(
-    box(width = 12L,
-      column(width = 10,
-        div(class = "dii-header",
-          p(class = "dii-header-title",
-            "Department of Infection and Immunity — Interactive Data Explorer"),
-          p(class = "dii-header-subtitle",
-            "Select a dataset below to explore it interactively with iSEE.")
-        )
-      ),
-      column(width = 2,
-        img(src = "logo.png", height = "80px", style = "float:right; padding-top:8px;")
-      )
+  tags$head(
+    tags$link(
+      rel = "stylesheet",
+      href = paste0("dii_brand.css?v=", as.integer(Sys.time()))
+    )
+  ),
+  div(class = "dii-banner",
+    div(class = "dii-banner-logos",
+      img(src = "DII_logo_vertical_neg.png", class = "logo-dii", alt = "DII"),
+      img(src = "Fox_hex.png",                class = "logo-fox", alt = "EMI")
+    ),
+    div(class = "dii-banner-text",
+      p(class = "dii-banner-title",
+        "iSEEindex"),
+      p(class = "dii-banner-subtitle",
+        "Select a dataset below to explore it interactively with iSEE.")
+    ),
+    div(class = "dii-attribution",
+      div(class = "dev-name",   "Dr. Joseph Longworth"),
+      div(class = "dept-line",  "Experimental Molecular Immunology"),
+      div(class = "dept-line",  "Dept. of Infection & Immunity · LIH")
     )
   )
 )

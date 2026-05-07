@@ -1,0 +1,280 @@
+/* DII / EMI brand styling for shinydashboard */
+
+:root {
+  --dii-primary: #6B1531;   /* DII burgundy */
+  --dii-accent:  #E94E1B;   /* DII orange */
+  --dii-muted:   #6c757d;
+}
+
+/* ── Sidebar ──────────────────────────────────────────────────────────────── */
+.main-sidebar, .left-side {
+  background-color: #6B1531 !important;
+}
+
+/* Active menu item */
+.sidebar-menu > li.active > a,
+.sidebar-menu > li > a:hover {
+  background-color: rgba(233, 78, 27, 0.25) !important;
+  border-left: 3px solid #E94E1B !important;
+}
+
+/* Sidebar text */
+.sidebar-menu > li > a,
+.sidebar-menu > li > a .menu-icon {
+  color: #ffffff !important;
+}
+
+/* ── Header bar ──────────────────────────────────────────────────────────── */
+.main-header .logo,
+.main-header .navbar {
+  background-color: #6B1531 !important;
+  border-bottom: 3px solid #E94E1B !important;
+  color: #ffffff !important;
+}
+
+.main-header .logo {
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+/* ── DII branding banner (injected into sidebar) ─────────────────────────── */
+.dii-sidebar-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 6px 8px;
+  background: linear-gradient(180deg, #4a0e20 0%, #6B1531 100%);
+  border-bottom: 2px solid #E94E1B;
+}
+
+/* DII logo — show at natural proportions, no cropping */
+.dii-sidebar-brand .logo-dii {
+  height: 64px;
+  width: auto;
+  flex-shrink: 0;
+}
+
+/* Fox hex — already well-cropped, just size it */
+.dii-sidebar-brand .logo-fox {
+  height: 64px;
+  width: auto;
+  flex-shrink: 0;
+}
+
+/* ── Attribution block (bottom of sidebar) ───────────────────────────────── */
+.dii-sidebar-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px 12px;
+  background-color: rgba(0, 0, 0, 0.25);
+  border-top: 1px solid rgba(255,255,255,0.15);
+  font-size: 1.0rem;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.55;
+}
+
+.dii-sidebar-footer .dev-name {
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 1.06rem;
+}
+
+.dii-sidebar-footer .dept-line {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.96rem;
+}
+
+/* ── Body / content area ──────────────────────────────────────────────────── */
+.content-wrapper, .right-side {
+  background-color: #f5f5f5;
+}
+
+/* ── Box status colours — LIH palette ────────────────────────────────────────
+   primary → Wine Red   #5A0024  (main plot / output boxes)
+   warning → Navy       #2A4662  (settings / control panels)
+   info    → Pastel Blue #6B95AA (overview / informational)
+   success → Teal       #4C9F99  (AI / skills / positive)
+   danger  → Orange     #F04E37  (alerts / destructive)
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* border-top stripe (all boxes) */
+.box.box-primary { border-top-color: #5A0024 !important; }
+.box.box-warning  { border-top-color: #2A4662 !important; }
+.box.box-info     { border-top-color: #6B95AA !important; }
+.box.box-success  { border-top-color: #4C9F99 !important; }
+.box.box-danger   { border-top-color: #F04E37 !important; }
+
+/* solid-header background + text */
+.box.box-primary.box-solid > .box-header,
+.box.box-primary > .box-header.with-border { background-color: #5A0024 !important; color: #fff !important; border-bottom-color: #5A0024 !important; }
+
+.box.box-warning.box-solid  > .box-header,
+.box.box-warning  > .box-header.with-border { background-color: #2A4662 !important; color: #fff !important; border-bottom-color: #2A4662 !important; }
+
+.box.box-info.box-solid     > .box-header,
+.box.box-info     > .box-header.with-border { background-color: #6B95AA !important; color: #fff !important; border-bottom-color: #6B95AA !important; }
+
+.box.box-success.box-solid  > .box-header,
+.box.box-success  > .box-header.with-border { background-color: #4C9F99 !important; color: #fff !important; border-bottom-color: #4C9F99 !important; }
+
+.box.box-danger.box-solid   > .box-header,
+.box.box-danger   > .box-header.with-border { background-color: #F04E37 !important; color: #fff !important; border-bottom-color: #F04E37 !important; }
+
+/* catch solidHeader=TRUE which renders as .box-solid */
+.box.box-solid.box-primary > .box-header { background-color: #5A0024 !important; }
+.box.box-solid.box-warning  > .box-header { background-color: #2A4662 !important; }
+.box.box-solid.box-info     > .box-header { background-color: #6B95AA !important; }
+.box.box-solid.box-success  > .box-header { background-color: #4C9F99 !important; }
+.box.box-solid.box-danger   > .box-header { background-color: #F04E37 !important; }
+
+/* ── Button colours — LIH palette ───────────────────────────────────────────
+   Shiny's actionButton always emits btn + btn-default alongside any extra
+   class, so we must target the combination and use body-scoped specificity
+   to beat Bootstrap's own btn-default rule.
+   ────────────────────────────────────────────────────────────────────────── */
+
+body .btn.btn-primary {
+  background-color: #5A0024 !important; border-color: #5A0024 !important; color: #fff !important;
+}
+body .btn.btn-primary:hover, body .btn.btn-primary:active, body .btn.btn-primary:focus {
+  background-color: #3d0018 !important; border-color: #3d0018 !important; color: #fff !important;
+}
+
+body .btn.btn-warning {
+  background-color: #2A4662 !important; border-color: #2A4662 !important; color: #fff !important;
+}
+body .btn.btn-warning:hover, body .btn.btn-warning:active, body .btn.btn-warning:focus {
+  background-color: #1e3349 !important; border-color: #1e3349 !important; color: #fff !important;
+}
+
+body .btn.btn-info {
+  background-color: #6B95AA !important; border-color: #6B95AA !important; color: #fff !important;
+}
+body .btn.btn-info:hover, body .btn.btn-info:active, body .btn.btn-info:focus {
+  background-color: #527f94 !important; border-color: #527f94 !important; color: #fff !important;
+}
+
+body .btn.btn-success {
+  background-color: #4C9F99 !important; border-color: #4C9F99 !important; color: #fff !important;
+}
+body .btn.btn-success:hover, body .btn.btn-success:active, body .btn.btn-success:focus {
+  background-color: #39857f !important; border-color: #39857f !important; color: #fff !important;
+}
+
+body .btn.btn-danger {
+  background-color: #F04E37 !important; border-color: #F04E37 !important; color: #fff !important;
+}
+body .btn.btn-danger:hover, body .btn.btn-danger:active, body .btn.btn-danger:focus {
+  background-color: #d03a25 !important; border-color: #d03a25 !important; color: #fff !important;
+}
+
+/* Plain btn-default (no other colour class) → Warm Gray */
+body .btn.btn-default:not(.btn-primary):not(.btn-warning):not(.btn-info):not(.btn-success):not(.btn-danger) {
+  background-color: #878787 !important; border-color: #878787 !important; color: #fff !important;
+}
+body .btn.btn-default:not(.btn-primary):not(.btn-warning):not(.btn-info):not(.btn-success):not(.btn-danger):hover,
+body .btn.btn-default:not(.btn-primary):not(.btn-warning):not(.btn-info):not(.btn-success):not(.btn-danger):active {
+  background-color: #6b6b6b !important; border-color: #6b6b6b !important; color: #fff !important;
+}
+
+/* downloadButton renders as <a class="btn btn-default shiny-download-link"> */
+a.shiny-download-link,
+a.shiny-download-link:link,
+a.shiny-download-link:visited {
+  background-color: #6B95AA !important;
+  border-color:     #6B95AA !important;
+  color: #fff !important;
+}
+a.shiny-download-link:hover,
+a.shiny-download-link:active,
+a.shiny-download-link:focus {
+  background-color: #527f94 !important;
+  border-color:     #527f94 !important;
+  color: #fff !important;
+}
+
+/* ── Links ────────────────────────────────────────────────────────────────── */
+a, a:visited { color: #E94E1B; }
+a:hover      { color: #6B1531; }
+
+/* ── Tab active state ────────────────────────────────────────────────────── */
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:focus,
+.nav-tabs > li.active > a:hover {
+  border-top: 3px solid #6B1531;
+  color: #6B1531;
+}
+
+/* ── iSEEindex landing-page banner ───────────────────────────────────────────
+   iSEEindex does not expose a sidebar in its landing page, so the brand
+   banner (DII vertical logo + Fox hex) and attribution sit at the top of the
+   body via body.header. Layout, colours, sizing are all controlled here so
+   app.R stays close to plain semantic markup.
+   ────────────────────────────────────────────────────────────────────────── */
+.dii-banner {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 14px 22px;
+  background: linear-gradient(180deg, #4a0e20 0%, #5A0024 100%);
+  border-bottom: 3px solid #F04E37;
+  color: #ffffff;
+  margin-bottom: 14px;
+}
+
+.dii-banner .dii-banner-logos {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.dii-banner .logo-dii,
+.dii-banner .logo-fox {
+  height: 70px;
+  width: auto;
+}
+
+.dii-banner .dii-banner-text {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.dii-banner .dii-banner-title {
+  font-size: 1.55rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #ffffff;
+  margin: 0 0 4px 0;
+}
+
+.dii-banner .dii-banner-subtitle {
+  font-size: 1.0rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+}
+
+.dii-banner .dii-attribution {
+  flex-shrink: 0;
+  text-align: right;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.78);
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  padding-left: 22px;
+}
+
+.dii-banner .dii-attribution .dev-name {
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 1.0rem;
+}
+
+.dii-banner .dii-attribution .dept-line {
+  color: rgba(255, 255, 255, 0.72);
+}
