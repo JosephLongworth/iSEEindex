@@ -34,3 +34,16 @@
 .initial_uri <- "uri"
 .initial_description <- "description"
 .initial_region <- "region"
+
+# Upload UI inputs/outputs ----
+
+.ui_upload_sce_file     <- "iSEEindex_INTERNAL_upload_sce_file"
+.ui_upload_title        <- "iSEEindex_INTERNAL_upload_title"
+.ui_upload_description  <- "iSEEindex_INTERNAL_upload_description"
+.ui_upload_layout_file  <- "iSEEindex_INTERNAL_upload_layout_file"
+.ui_upload_add_button   <- "iSEEindex_INTERNAL_upload_add"
+.ui_upload_commit_button <- "iSEEindex_INTERNAL_upload_commit"
+.ui_upload_status       <- "iSEEindex_INTERNAL_upload_status"
+
+# Prefix used to mark uploaded (session-only) dataset IDs ----
+.upload_id_prefix <- "UPLOAD_SESSION_"

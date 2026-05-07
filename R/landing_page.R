@@ -20,8 +20,8 @@
 #'
 #' @author Kevin Rue-Albrecht
 #'
-#' @importFrom shiny actionButton br column fluidRow reactiveValues
-#' renderUI selectizeInput tabPanel tagList uiOutput
+#' @importFrom shiny actionButton br column fileInput fluidRow reactiveValues
+#' renderUI selectizeInput tabPanel tagList textAreaInput textInput uiOutput
 #' @importFrom shinydashboard box tabBox
 #' @importFrom DT DTOutput
 #' @importFrom shinyjs disable
@@ -82,6 +82,52 @@
                             )
                         )
                     ),
+                fluidRow(
+                    column(width = 12L,
+                        shinydashboard::box(
+                            title = "Upload Your Own Data",
+                            collapsible = TRUE, collapsed = TRUE,
+                            width = NULL,
+                            solidHeader = FALSE,
+                            fluidRow(
+                                column(width = 6L,
+                                    fileInput(.ui_upload_sce_file,
+                                        label = "SingleCellExperiment / SummarizedExperiment (.rds) — large files may take a moment to upload",
+                                        accept = c(".rds", ".RDS"),
+                                        multiple = FALSE),
+                                    textInput(.ui_upload_title,
+                                        label = "Dataset title",
+                                        placeholder = "e.g. My scRNA-seq experiment"),
+                                    textAreaInput(.ui_upload_description,
+                                        label = "Description (optional)",
+                                        rows = 3L,
+                                        placeholder = "Brief description of this dataset.")
+                                ),
+                                column(width = 6L,
+                                    fileInput(.ui_upload_layout_file,
+                                        label = "Initial layout / configuration script (.R, optional)",
+                                        accept = c(".r", ".R"),
+                                        multiple = FALSE),
+                                    br(),
+                                    fluidRow(
+                                        column(width = 6L,
+                                            actionButton(.ui_upload_add_button,
+                                                label = "Add for this session",
+                                                style = "color:#ffffff; background-color:#4B7EA3; border-color:#2e6da4; width:100%")
+                                        ),
+                                        column(width = 6L,
+                                            actionButton(.ui_upload_commit_button,
+                                                label = "Commit to shared storage",
+                                                style = "color:#ffffff; background-color:#6B1435; border-color:#4a0e25; width:100%")
+                                        )
+                                    ),
+                                    br(),
+                                    uiOutput(.ui_upload_status)
+                                )
+                            )
+                        )
+                    )
+                ),
                 body.footer
                 ) # tagList
         }) # renderUI
@@ -102,11 +148,14 @@
         rObjects <- reactiveValues(
             rerender_datasets=1L,
             rerender_overview=1L,
-            rerender_initial=1L)
+            rerender_initial=1L,
+            upload_status=NULL)
 
         .create_observers(input, session, pObjects, rObjects, FUN.initial, default.add, default.position)
 
         .create_launch_observers(FUN, bfc, input, session, pObjects)
+
+        .create_upload_observers(input, output, session, pObjects, rObjects)
 
         .render_datasets_table(output, pObjects, rObjects)
 

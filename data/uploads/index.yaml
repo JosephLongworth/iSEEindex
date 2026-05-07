@@ -1,0 +1,6 @@
+- id: shared_upload_SCE_Mthdf1l_iSEE_20260507184658
+  title: SCE_Mthdf1l_iSEE
+  uri: runr://readRDS('l:/Bioinformatics/Joseph/Tools/iSEEindex/data/uploads/shared_upload_SCE_Mthdf1l_iSEE_20260507184658.rds')
+  description: 'Shared uploaded dataset: SCE_Mthdf1l_iSEE'
+  layout_uri: .na.character
+  timestamp: 2026-05-07 18:48:03

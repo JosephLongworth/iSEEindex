@@ -1,4 +1,5 @@
 options(shiny.autoload.r = FALSE)
+options(shiny.maxRequestSize = 5 * 1024^3)  # 5 GB upload limit
 
 library("iSEE")
 library("iSEEindex")
@@ -14,14 +15,17 @@ library("shinydashboard")
 
 bfc <- BiocFileCache(cache = tempdir())
 
+upload_dir <- file.path("data", "uploads")
+dir.create(upload_dir, showWarnings = FALSE, recursive = TRUE)
+
 dataset_fun <- function() {
   x <- yaml::read_yaml("data/datasets.yaml")
-  x$datasets
+  .load_shared_uploads(x$datasets, upload_dir)
 }
 
 initial_fun <- function() {
   x <- yaml::read_yaml("data/datasets.yaml")
-  x$initial
+  .load_shared_upload_initial(x$initial, upload_dir)
 }
 
 header <- tagList(
