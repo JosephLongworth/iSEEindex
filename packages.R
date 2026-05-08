@@ -21,4 +21,4 @@ BiocManager::install(c(
     "Seurat"
 ), ask = FALSE, update = FALSE)
 
-BiocManager::install("iSEE/iSEEindex", ask = FALSE)
+BiocManager::install("JosephLongworth/iSEEindex@merge-with-converter", ask = FALSE)
