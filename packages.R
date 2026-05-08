@@ -14,7 +14,11 @@ BiocManager::install(c(
     "stringr",
     "urltools",
     "paws.storage",
-    "yaml"
+    "yaml",
+    "jsonlite",
+    "later",
+    "zellkonverter",
+    "Seurat"
 ), ask = FALSE, update = FALSE)
 
 BiocManager::install("iSEE/iSEEindex", ask = FALSE)
