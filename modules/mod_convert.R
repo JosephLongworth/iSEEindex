@@ -121,6 +121,11 @@ convert_register <- function(input, output, session) {
           rv$sce_path <- dest
           rv$meta_path <- meta_file
           rv$meta <- m
+          # Expose to the upload modal for pre-fill.
+          if (exists("LAST_RESULTS", inherits = TRUE)) {
+            LAST_RESULTS$convert_rds  <- dest
+            LAST_RESULTS$convert_name <- f$name
+          }
           set_stage("ready")
           log_msg("Ready: download the .rds below.")
           showNotification("Conversion complete.", type = "message")

@@ -28,6 +28,7 @@ source(file.path(APP_DIR, "modules", "mod_branding.R"))
 source(file.path(APP_DIR, "modules", "mod_pipeline_ui.R"))
 source(file.path(APP_DIR, "modules", "mod_convert.R"))
 source(file.path(APP_DIR, "modules", "mod_layout_builder.R"))
+source(file.path(APP_DIR, "modules", "mod_upload.R"))
 
 # ── iSEEindex setup (unchanged behaviour) ─────────────────────────────────────
 bfc <- BiocFileCache(cache = tempdir())
@@ -91,7 +92,9 @@ header <- branding_header_ui()
 # Build the iSEEindex shinyApp, then wrap its server to register our modal
 # observers (Convert + Layout builder). All our IDs are prefixed cv_/lb_ to
 # avoid clashing with iSEE's own inputs.
-app <- iSEEindex(bfc, dataset_fun, initial_fun, body.header = header)
+app <- iSEEindex(bfc, dataset_fun, initial_fun,
+                 body.header = header,
+                 show_upload_box = FALSE)
 
 datasets_yaml_path <- file.path(APP_DIR, "data", "datasets.yaml")
 
@@ -105,6 +108,7 @@ app$serverFuncSource <- function() {
     inner(input, output, session)
     convert_register(input, output, session)
     layout_register(input, output, session, datasets_yaml_path)
+    upload_register(input, output, session)
   }
 }
 

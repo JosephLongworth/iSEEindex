@@ -229,7 +229,8 @@ iSEEindex <- function(bfc,
                       default.position = c("first", "last"),
                       app.title = NULL,
                       body.header = NULL,
-                      body.footer = NULL) {
+                      body.footer = NULL,
+                      show_upload_box = TRUE) {
     stopifnot(is(bfc, "BiocFileCache"))
     if (is.null(FUN.initial)) {
         FUN.initial <- function() NULL
@@ -249,7 +250,8 @@ iSEEindex <- function(bfc,
             default.add,
             default.position,
             body.header,
-            body.footer
+            body.footer,
+            show_upload_box
         ),
         appTitle = app.title
     )

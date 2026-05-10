@@ -245,6 +245,15 @@ layout_register <- function(input, output, session, datasets_yaml_path) {
     },
     content = function(file) {
       writeLines(script_text(), file)
+      # Also persist a copy to tempdir so the upload modal can pre-fill from it.
+      if (exists("LAST_RESULTS", inherits = TRUE)) {
+        keep <- tempfile(pattern = paste0(
+          gsub("[^A-Za-z0-9_]+", "_", rv$dataset_id %||% "dataset"),
+          "_initial_"), fileext = ".R")
+        writeLines(script_text(), keep)
+        LAST_RESULTS$layout_R    <- keep
+        LAST_RESULTS$layout_name <- rv$dataset_id
+      }
     }
   )
 

@@ -33,7 +33,8 @@
                           default.add = TRUE,
                           default.position = c("first", "last"),
                           body.header = NULL,
-                          body.footer = NULL) {
+                          body.footer = NULL,
+                          show_upload_box = TRUE) {
     default.position <- match.arg(default.position)
     # datasets
     datasets_available_list <- FUN.datasets()
@@ -82,7 +83,7 @@
                             )
                         )
                     ),
-                fluidRow(
+                if (isTRUE(show_upload_box)) fluidRow(
                     column(width = 12L,
                         shinydashboard::box(
                             title = "Upload Your Own Data",

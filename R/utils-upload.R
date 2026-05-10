@@ -47,11 +47,14 @@
     if (!ok) {
         return(list(error = "Failed to copy uploaded RDS file to temporary location."))
     }
+    # Use forward slashes so the path embedded in `runr://readRDS('...')`
+    # parses correctly on Windows (backslash-U/A/T... are R unicode escapes).
+    abs_rds <- normalizePath(dest_rds, winslash = "/")
 
     new_row <- data.frame(
         id          = dataset_id,
         title       = title_val,
-        uri         = paste0("runr://readRDS('", dest_rds, "')"),
+        uri         = paste0("runr://readRDS('", abs_rds, "')"),
         description = desc_val,
         stringsAsFactors = FALSE
     )
@@ -68,12 +71,13 @@
     if (!is.null(layout_info)) {
         dest_r <- file.path(session_dir, paste0(dataset_id, "_layout.R"))
         file.copy(layout_info$datapath, dest_r, overwrite = TRUE)
+        abs_r <- normalizePath(dest_r, winslash = "/")
         layout_id <- paste0(dataset_id, "_layout")
         layout_row <- data.frame(
             id          = layout_id,
             datasets    = dataset_id,
             title       = paste0(title_val, " (uploaded layout)"),
-            uri         = paste0("rcall://", dest_r),
+            uri         = paste0("rcall://", abs_r),
             description = "User-uploaded initial layout configuration.",
             stringsAsFactors = FALSE
         )
