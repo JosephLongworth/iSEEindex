@@ -319,8 +319,13 @@ iSEEindex <- function(bfc,
                 initial_message <- capture.output(
                     init <- try(.parse_initial(bfc, dataset_id, initial_id, initial_metadata)),
                     type = "message")
-                initial <- init$initial
-                tour <- init$tour
+                if (is(init, "try-error")) {
+                    initial <- NULL
+                    tour <- NULL
+                } else {
+                    initial <- init$initial
+                    tour <- init$tour
+                }
             }
             if (is(init, "try-error")) {
                 showModal(modalDialog(

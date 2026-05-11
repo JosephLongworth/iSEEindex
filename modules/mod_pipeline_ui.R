@@ -148,11 +148,11 @@ pipeline_ui_styles <- function() {
 estimate_h5ad_time <- function(size_bytes) {
   if (is.null(size_bytes) || !is.finite(size_bytes) || size_bytes <= 0) return("")
   gb <- size_bytes / 1e9
-  if (gb < 0.1) return("typically a few seconds")
-  if (gb < 0.5) return("typically 10-30 seconds")
-  if (gb < 1.5) return("typically 30-90 seconds")
-  if (gb < 4)   return("typically 1-3 minutes")
-  "typically several minutes"
+  if (gb < 0.1) return("typically 30 seconds to 2 minutes")
+  if (gb < 0.5) return("typically 1-3 minutes")
+  if (gb < 1.5) return("typically 2-5 minutes")
+  if (gb < 4)   return("typically 5-10 minutes")
+  "typically 10+ minutes"
 }
 
 # Always-on browser-side busy banner. Hidden by default; JS reveals it as

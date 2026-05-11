@@ -22,12 +22,6 @@
   status      = "iSEEindex_INTERNAL_upload_status"
 )
 
-# Cross-modal pre-fill state. Populated by the layout builder when it produces
-# an initial.R; read here on modal open.
-LAST_RESULTS <- new.env(parent = emptyenv())
-LAST_RESULTS$layout_R    <- NULL
-LAST_RESULTS$layout_name <- NULL
-
 upload_modal_ui <- function() {
   modalDialog(
     title = tagList(icon("upload"), " Upload dataset"),
@@ -44,19 +38,6 @@ upload_modal_ui <- function() {
       " to use it now without persisting, or ",
       tags$strong("Commit to shared storage"),
       " to make it available on the curated landing page across sessions."),
-
-    fluidRow(
-      column(12,
-        selectInput("up_prefill", "Pre-fill layout from",
-          choices = c(
-            "(none)"                      = "none",
-            "Last layout-builder result"  = "layout"
-          ),
-          selected = "none", width = "100%"),
-        tags$small(class = "text-muted", uiOutput("up_prefill_status"))
-      )
-    ),
-    hr(),
 
     fluidRow(
       column(6,
@@ -142,34 +123,6 @@ upload_register <- function(input, output, session) {
     showModal(upload_modal_ui())
   })
 
-  output$up_prefill_status <- renderUI({
-    have_layout <- !is.null(LAST_RESULTS$layout_R) &&
-                    file.exists(LAST_RESULTS$layout_R)
-    if (have_layout) {
-      HTML(paste0("Layout script available: ",
-                  basename(LAST_RESULTS$layout_R)))
-    } else {
-      HTML("No prior layout generated this session.")
-    }
-  })
-
-  observeEvent(input$up_prefill, {
-    sel <- input$up_prefill
-    if (is.null(sel) || sel != "layout") return()
-    p <- LAST_RESULTS$layout_R
-    if (is.null(p) || !file.exists(p)) return()
-    session$sendInputMessage(.UP_IDS$layout_file, list(
-      name     = basename(p),
-      size     = file.info(p)$size,
-      type     = "",
-      datapath = p
-    ))
-  }, ignoreInit = TRUE)
-
-  # When a file is picked, convert if needed and write the resulting SCE to
-  # a temp .rds, then surface that path to the iSEEindex upload helpers via
-  # session$sendInputMessage on the sce_file input. The helpers expect a
-  # fileInput-shaped list with name/size/type/datapath.
   busy_set <- function(title, detail = "", hide_size = TRUE) {
     msg <- list(title = title, detail = detail)
     if (hide_size) msg$size <- FALSE

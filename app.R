@@ -71,7 +71,7 @@ dir.create(upload_dir, showWarnings = FALSE, recursive = TRUE)
   for (entry in index) {
     layout_uri <- entry$layout_uri
     if (is.null(layout_uri) || is.na(layout_uri) || !nzchar(layout_uri)) next
-    layout_path <- sub("^rcall://", "", layout_uri)
+    layout_path <- sub("^(rcall|localhost)://", "", layout_uri)
     if (!file.exists(layout_path)) next
     base_list <- c(base_list, list(list(
       id          = paste0(entry$id, "_layout"),
