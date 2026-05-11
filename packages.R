@@ -17,8 +17,11 @@ BiocManager::install(c(
     "yaml",
     "jsonlite",
     "later",
-    "zellkonverter",
     "Seurat"
 ), ask = FALSE, update = FALSE)
+
+# anndataR: pure-R reader for .h5ad, replaces zellkonverter/Python path.
+install.packages("anndataR",
+    repos = c("https://scverse.r-universe.dev", "https://cloud.r-project.org"))
 
 BiocManager::install("JosephLongworth/iSEEindex@merge-with-converter", ask = FALSE)

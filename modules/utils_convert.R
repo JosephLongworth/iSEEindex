@@ -31,13 +31,13 @@ convert_to_sce <- function(datapath, ext, on_stage = function(stage, source = NU
   ext <- tolower(ext)
   if (ext == "h5ad") {
     on_stage("load", "h5ad")
-    if (!requireNamespace("zellkonverter", quietly = TRUE)) {
-      stop("zellkonverter not installed. Run: BiocManager::install('zellkonverter')")
+    if (!requireNamespace("anndataR", quietly = TRUE)) {
+      stop("anndataR not installed. Run: install.packages('anndataR', repos = c('https://scverse.r-universe.dev', 'https://cloud.r-project.org'))")
     }
-    sce <- suppressPackageStartupMessages(
-      zellkonverter::readH5AD(datapath, use_hdf5 = FALSE, verbose = FALSE)
-    )
     on_stage("convert", "h5ad")
+    sce <- suppressPackageStartupMessages(
+      anndataR::read_h5ad(datapath, as = "SingleCellExperiment")
+    )
     return(sce)
   }
   if (ext == "rds") {

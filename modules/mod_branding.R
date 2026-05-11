@@ -27,9 +27,6 @@ branding_header_ui <- function() {
         actionButton("open_upload", "Upload dataset",
                      icon = icon("upload"),
                      class = "btn btn-sm btn-light"),
-        actionButton("open_convert", "Convert dataset",
-                     icon = icon("right-left"),
-                     class = "btn btn-sm btn-light"),
         actionButton("open_layout", "Build initial.R",
                      icon = icon("sliders"),
                      class = "btn btn-sm btn-light")
