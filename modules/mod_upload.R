@@ -28,16 +28,6 @@ LAST_RESULTS <- new.env(parent = emptyenv())
 LAST_RESULTS$layout_R    <- NULL
 LAST_RESULTS$layout_name <- NULL
 
-# Server-side fallback consulted by the patched iSEEindex upload helpers.
-# Our modal performs conversion server-side, then writes the resulting .rds
-# path here. The patched `.handle_upload_add` / `.handle_upload_commit` use
-# this when `input[[.ui_upload_sce_file]]` is NULL — which is always the case
-# for files we converted, because `session$sendInputMessage` only updates the
-# client-side fileInput state.
-UPLOAD_FALLBACK <- new.env(parent = emptyenv())
-UPLOAD_FALLBACK$datapath <- NULL
-UPLOAD_FALLBACK$name     <- NULL
-
 upload_modal_ui <- function() {
   modalDialog(
     title = tagList(icon("upload"), " Upload dataset"),
@@ -70,7 +60,15 @@ upload_modal_ui <- function() {
 
     fluidRow(
       column(6,
-        fileInput("up_input_file",
+        # The dataset fileInput uses iSEEindex's internal ID so the package's
+        # own .create_upload_observers picks it up directly when the user
+        # picks an SCE .rds. For H5AD / Seurat, the conversion observer below
+        # (watching the same input) detects the non-SCE extension, runs the
+        # conversion to .rds, and shows a "Download converted .rds" button -
+        # the user re-uploads the converted file into the same input to
+        # actually commit it. (Shiny does not allow server-side population of
+        # a fileInput's value.)
+        fileInput(.UP_IDS$sce_file,
           label = "Dataset file (.h5ad, Seurat .rds, or SCE .rds)",
           accept = c(".h5ad", ".rds", ".RDS"),
           multiple = FALSE),
@@ -172,9 +170,32 @@ upload_register <- function(input, output, session) {
   # a temp .rds, then surface that path to the iSEEindex upload helpers via
   # session$sendInputMessage on the sce_file input. The helpers expect a
   # fileInput-shaped list with name/size/type/datapath.
-  observeEvent(input$up_input_file, {
-    req(input$up_input_file)
-    f <- input$up_input_file
+  busy_set <- function(title, detail = "", hide_size = TRUE) {
+    msg <- list(title = title, detail = detail)
+    if (hide_size) msg$size <- FALSE
+    session$sendCustomMessage("up_busy_set", msg)
+  }
+
+  # Convert a Seurat object or H5AD file to SCE, save to tempdir, and surface
+  # a Download button. The user re-uploads the converted .rds to complete the
+  # Add/Commit flow (Shiny can't populate a fileInput server-side).
+  finish_conversion <- function(sce, base_name) {
+    rv$meta <- tryCatch(extract_sce_metadata(sce), error = function(e) list())
+    ts <- format(Sys.time(), "%Y%m%d_%H%M%S_")
+    dest <- file.path(tempdir(), paste0(ts, base_name, "_sce.rds"))
+    saveRDS(sce, dest)
+    rv$sce_path <- dest
+    set_stage("ready")
+    session$sendCustomMessage("up_busy_hide", list())
+    showNotification(
+      paste0("Conversion complete. Download the converted .rds, then ",
+             "re-upload it here to add or commit the dataset."),
+      duration = NULL, type = "message")
+  }
+
+  observeEvent(input[[.UP_IDS$sce_file]], {
+    f <- input[[.UP_IDS$sce_file]]
+    req(f)
     ext <- tolower(tools::file_ext(f$name))
     if (!ext %in% c("h5ad", "rds")) {
       showNotification("Unsupported file type. Use .h5ad or .rds",
@@ -186,86 +207,86 @@ upload_register <- function(input, output, session) {
     rv$meta <- NULL
     rv$orig_name <- f$name
     rv$orig_size <- f$size
-    rv$needed_conv <- ext != "rds"  # provisional; refined after readRDS
+    rv$needed_conv <- FALSE
+    base_name <- tools::file_path_sans_ext(f$name)
 
-    # Helper: push a status update to the persistent browser-side banner.
-    # The DNA spinner and shimmer keep running across all calls — only the
-    # title/detail text changes. We hide the size pill after upload since
-    # subsequent stages are about RAM/disk, not network.
-    busy_set <- function(title, detail = "", hide_size = TRUE) {
-      msg <- list(title = title, detail = detail)
-      if (hide_size) msg$size <- FALSE
-      session$sendCustomMessage("up_busy_set", msg)
+    if (ext == "rds") {
+      # Peek inside: if SCE, no conversion needed - iSEEindex's own observers
+      # will read this fileInput directly when the user clicks Add/Commit. We
+      # just render a summary so the user gets feedback.
+      busy_set("Inspecting .rds...", "Reading object class.")
+      run_next(function() {
+        obj <- tryCatch(readRDS(f$datapath), error = function(e) NULL)
+        if (is.null(obj)) {
+          showNotification("Failed to read .rds", type = "error")
+          session$sendCustomMessage("up_busy_hide", list())
+          return()
+        }
+        if (inherits(obj, "SingleCellExperiment")) {
+          set_stage("ready", "rds")
+          rv$meta <- tryCatch(extract_sce_metadata(obj),
+                              error = function(e) list())
+          rv$sce_path <- f$datapath  # show summary; no conversion file needed
+          rv$needed_conv <- FALSE
+          updateTextInput(session, .UP_IDS$title, value = base_name)
+          session$sendCustomMessage("up_busy_hide", list())
+          return()
+        }
+        if (inherits(obj, "Seurat")) {
+          if (!requireNamespace("Seurat", quietly = TRUE)) {
+            showNotification("Seurat package not installed.", type = "error")
+            session$sendCustomMessage("up_busy_hide", list())
+            return()
+          }
+          rv$needed_conv <- TRUE
+          set_stage("convert", "seurat")
+          busy_set("Converting Seurat -> SingleCellExperiment...",
+                   "This can take a moment for large objects.")
+          run_next(function() {
+            sce <- tryCatch(
+              suppressPackageStartupMessages(
+                Seurat::as.SingleCellExperiment(obj)),
+              error = function(e) {
+                showNotification(paste("Conversion failed:",
+                                       conditionMessage(e)),
+                                 type = "error", duration = NULL)
+                session$sendCustomMessage("up_busy_hide", list())
+                NULL
+              })
+            if (is.null(sce)) return()
+            finish_conversion(sce, base_name)
+          })
+          return()
+        }
+        showNotification(paste(
+          "RDS is neither SingleCellExperiment nor Seurat (class:",
+          paste(class(obj), collapse = "/"), ")"), type = "error",
+          duration = NULL)
+        session$sendCustomMessage("up_busy_hide", list())
+      })
+      return()
     }
 
-    # Stage text for an h5ad includes a coarse time hint based on file size.
+    # H5AD path
+    rv$needed_conv <- TRUE
+    set_stage("convert", "h5ad")
     h5ad_hint <- estimate_h5ad_time(f$size)
-    load_detail <- if (ext == "h5ad" && nzchar(h5ad_hint))
-      paste0("Reading H5AD via anndataR - ", h5ad_hint, ".")
-    else if (ext == "rds")
-      "Reading .rds from disk..."
-    else ""
-
-    busy_set("Loading dataset into memory...", load_detail)
-
-    ts <- format(Sys.time(), "%Y%m%d_%H%M%S_")
-    base_name <- tools::file_path_sans_ext(f$name)
-    dest <- file.path(tempdir(), paste0(ts, base_name, "_sce.rds"))
-
+    busy_set("Converting H5AD -> SingleCellExperiment...",
+             if (nzchar(h5ad_hint))
+               paste0("Reading H5AD via anndataR - ", h5ad_hint, ".")
+             else "Reading H5AD via anndataR.")
     run_next(function() {
       sce <- tryCatch(
-        convert_to_sce(f$datapath, ext, on_stage = function(s, src = NULL) {
-          set_stage(s, src)
-          # on_stage runs inside the blocking convert call, so it can't push
-          # to the browser in real time. The pre-call busy_set covers the
-          # whole window.
-        }),
+        convert_to_sce(f$datapath, "h5ad",
+                       on_stage = function(s, src = NULL) set_stage(s, src)),
         error = function(e) {
           showNotification(paste("Conversion failed:", conditionMessage(e)),
                            type = "error", duration = NULL)
-          set_stage(NULL)
           session$sendCustomMessage("up_busy_hide", list())
           NULL
         })
       if (is.null(sce)) return()
-
-      rv$needed_conv <- !identical(rv$proc_source, "rds")
-
-      set_stage("convert", source = rv$proc_source)
-      run_next(function() {
-        m <- tryCatch(extract_sce_metadata(sce), error = function(e) list())
-        run_next(function() {
-          # For SCE input, copy the original so the upload helpers and the
-          # download button both point at a stable path; for converted input,
-          # save the new SCE.
-          if (identical(rv$proc_source, "rds")) {
-            file.copy(f$datapath, dest, overwrite = TRUE)
-          } else {
-            saveRDS(sce, dest)
-          }
-          rv$sce_path <- dest
-          rv$meta <- m
-
-          # Stash the converted path so the patched iSEEindex helpers find it.
-          # We also send a client-side input message so the fileInput shows
-          # the filename to the user, but that update does NOT make the value
-          # readable on the server — the server-side fallback above is what
-          # actually feeds the add/commit handlers.
-          UPLOAD_FALLBACK$datapath <- dest
-          UPLOAD_FALLBACK$name     <- paste0(base_name, "_sce.rds")
-          session$sendInputMessage(.UP_IDS$sce_file, list(
-            name     = paste0(base_name, "_sce.rds"),
-            size     = file.info(dest)$size,
-            type     = "",
-            datapath = dest
-          ))
-          # Pre-fill title with the basename if empty.
-          updateTextInput(session, .UP_IDS$title, value = base_name)
-
-          set_stage("ready")
-          session$sendCustomMessage("up_busy_hide", list())
-        })
-      })
+      finish_conversion(sce, base_name)
     })
   })
 

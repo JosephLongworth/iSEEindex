@@ -16,3 +16,15 @@
   description: 'Shared uploaded dataset: UMAP of Myeloid cells'
   layout_uri: .na.character
   timestamp: 2026-05-11 10:03:15
+- id: shared_upload_UMAP_of_Tcells_sce_20260512003959
+  title: UMAP of Tcells_sce
+  uri: runr://readRDS('l:/Bioinformatics/Joseph/Tools/iSEEindex/data/uploads/shared_upload_UMAP_of_Tcells_sce_20260512003959.rds')
+  description: 'Shared uploaded dataset: UMAP of Tcells_sce'
+  layout_uri: .na.character
+  timestamp: 2026-05-12 00:40:00
+- id: shared_upload_UMAP_of_Myeloid_cells_20260512004057
+  title: UMAP of Myeloid cells
+  uri: runr://readRDS('l:/Bioinformatics/Joseph/Tools/iSEEindex/data/uploads/shared_upload_UMAP_of_Myeloid_cells_20260512004057.rds')
+  description: 'Shared uploaded dataset: UMAP of Myeloid cells'
+  layout_uri: .na.character
+  timestamp: 2026-05-12 00:40:57

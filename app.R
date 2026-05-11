@@ -29,43 +29,12 @@ source(file.path(APP_DIR, "modules", "mod_pipeline_ui.R"))
 source(file.path(APP_DIR, "modules", "mod_layout_builder.R"))
 source(file.path(APP_DIR, "modules", "mod_upload.R"))
 
-# ── Patch iSEEindex upload observers ──────────────────────────────────────────
-# Our modal converts H5AD/Seurat -> SCE server-side and writes the resulting
-# .rds path to `UPLOAD_FALLBACK` (see mod_upload.R). Shiny's fileInput cannot
-# be populated server-side (sendInputMessage only updates the client), so
-# `input[[.ui_upload_sce_file]]` stays NULL for files we converted. We wrap
-# `input` with an S3 object that transparently returns the fallback for that
-# one id; everything else passes through to the real reactive input.
-`[[.iseeindex_input_fb` <- function(x, name) {
-  if (identical(name, x$sce_id) && is.null(x$real[[name]]) &&
-      !is.null(UPLOAD_FALLBACK$datapath) &&
-      file.exists(UPLOAD_FALLBACK$datapath)) {
-    return(list(
-      name     = UPLOAD_FALLBACK$name %||% basename(UPLOAD_FALLBACK$datapath),
-      size     = file.info(UPLOAD_FALLBACK$datapath)$size,
-      type     = "",
-      datapath = UPLOAD_FALLBACK$datapath
-    ))
-  }
-  x$real[[name]]
-}
-`$.iseeindex_input_fb` <- function(x, name) x[[name]]
-
-local({
-  ns <- asNamespace("iSEEindex")
-  orig_create_obs <- ns$.create_upload_observers
-  patched <- function(input, output, session, pObjects, rObjects,
-                      upload_dir = file.path("data", "uploads"),
-                      max_persistent = 10L) {
-    wrapped <- structure(
-      list(real = input, sce_id = ns$.ui_upload_sce_file),
-      class = "iseeindex_input_fb"
-    )
-    orig_create_obs(wrapped, output, session, pObjects, rObjects,
-                    upload_dir = upload_dir, max_persistent = max_persistent)
-  }
-  assignInNamespace(".create_upload_observers", patched, ns = ns)
-})
+# ── No namespace patches needed ───────────────────────────────────────────────
+# The modal uses iSEEindex's internal fileInput ID (.UP_IDS$sce_file), so the
+# package's own .create_upload_observers reads the user-picked file directly.
+# For H5AD / Seurat inputs, the modal converts to .rds and prompts the user to
+# download + re-upload the converted file (Shiny can't populate a fileInput
+# server-side, so this is the simplest reliable path).
 
 # ── iSEEindex setup (unchanged behaviour) ─────────────────────────────────────
 bfc <- BiocFileCache(cache = tempdir())

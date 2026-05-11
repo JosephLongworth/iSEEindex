@@ -35,9 +35,12 @@ convert_to_sce <- function(datapath, ext, on_stage = function(stage, source = NU
       stop("anndataR not installed. Run: install.packages('anndataR', repos = c('https://scverse.r-universe.dev', 'https://cloud.r-project.org'))")
     }
     on_stage("convert", "h5ad")
-    sce <- suppressPackageStartupMessages(
+    # anndataR emits warnings on unusual `uns` entries (e.g. nested dicts it
+    # cannot map to SCE metadata) - these are not fatal; the read still
+    # returns a valid SCE. Swallow them to avoid alarming the user.
+    sce <- suppressPackageStartupMessages(suppressWarnings(
       anndataR::read_h5ad(datapath, as = "SingleCellExperiment")
-    )
+    ))
     return(sce)
   }
   if (ext == "rds") {
