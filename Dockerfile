@@ -1,4 +1,4 @@
-FROM bioconductor/bioconductor_docker:RELEASE_3_19
+FROM bioconductor/bioconductor_docker:RELEASE_3_21
 
 LABEL maintainer="Joseph Longworth"
 
