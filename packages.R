@@ -21,7 +21,15 @@ BiocManager::install(c(
 ), ask = FALSE, update = FALSE)
 
 # anndataR: pure-R reader for .h5ad, replaces zellkonverter/Python path.
-install.packages("anndataR",
-    repos = c("https://scverse.r-universe.dev", "https://cloud.r-project.org"))
+# Installed from Bioconductor (more robust mirror coverage than r-universe).
+# Fail loudly if missing post-install - BiocManager::install only warns, which
+# would otherwise silently produce an image that errors at first h5ad upload.
+BiocManager::install("anndataR", ask = FALSE, update = FALSE)
+if (!requireNamespace("anndataR", quietly = TRUE)) {
+    stop("anndataR failed to install from Bioconductor.")
+}
 
 BiocManager::install("JosephLongworth/iSEEindex@merge-with-converter", ask = FALSE)
+if (!requireNamespace("iSEEindex", quietly = TRUE)) {
+    stop("iSEEindex failed to install from the merge-with-converter branch.")
+}
