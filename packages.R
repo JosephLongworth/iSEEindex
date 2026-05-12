@@ -29,7 +29,7 @@ if (!requireNamespace("anndataR", quietly = TRUE)) {
     stop("anndataR failed to install from Bioconductor.")
 }
 
-BiocManager::install("JosephLongworth/iSEEindex@merge-with-converter", ask = FALSE)
+BiocManager::install("JosephLongworth/iSEEindex@merge-with-converter", ask = FALSE, force = TRUE)
 if (!requireNamespace("iSEEindex", quietly = TRUE)) {
     stop("iSEEindex failed to install from the merge-with-converter branch.")
 }
